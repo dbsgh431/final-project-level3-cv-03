@@ -35,11 +35,11 @@ import wandb
 global CFG
 
 CFG = {
-    'IMG_WIDTH':512,
-    'IMG_HEIGTH':1024,
+    'IMG_WIDTH':1024,
+    'IMG_HEIGTH':512,
     'EPOCHS':10,
     'LEARNING_RATE':3e-4,
-    'BATCH_SIZE':32,
+    'BATCH_SIZE':16,
     'SEED':3
 }
 
@@ -54,8 +54,15 @@ def seed_everything(seed):
     torch.backends.cudnn.benchmark = True
 
 
+def crop_three_quarters(img, h):
+    h_start = int(h*0.25)
+    image = img[h_start:h+1,::,::]
+    return image
+
 class Augmentation():
     train_transform = A.Compose([A.Resize(CFG['IMG_HEIGTH'],CFG['IMG_WIDTH']),
+                                A.HorizontalFlip(p=0.5),
+                                A.RandomBrightnessContrast(p=0.25),
                                 A.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225), max_pixel_value=255.0, always_apply=False, p=1.0),
                                 ToTensorV2()
                                 ])
@@ -83,11 +90,11 @@ class CustomDataset(Dataset):
         image = cv2.imread(img_path)
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
-        
+        image = crop_three_quarters(image, CFG['IMG_HEIGTH'])
         if self.transforms is not None:
             image = self.transforms(image=image)['image']
             
-        
+
         if self.labels is not None:
             label = self.labels[index]
             return image, label
@@ -101,7 +108,7 @@ class CustomDataset(Dataset):
 class BaseModel(nn.Module):
     def __init__(self, num_classes=1):
         super(BaseModel, self).__init__()
-        self.backbone = timm.create_model(model_name='efficientnet_b0', pretrained=True)
+        self.backbone = timm.create_model(model_name='efficientnet_b3', pretrained=True)
         self.fc = nn.Linear(1000,num_classes)
         #self.classifier1 = nn.Linear(256, num_classes)
         
@@ -207,7 +214,7 @@ if __name__ == '__main__':
     wandb.init(
     project="Final Project", 
     entity="aitech4_cv3",
-    name='classification',
+    name='classification_EFB3',
     config = {
         "lr" : CFG['LEARNING_RATE'],
         "epoch" : CFG['EPOCHS'],
