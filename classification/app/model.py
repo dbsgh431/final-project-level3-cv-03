@@ -22,11 +22,12 @@ CFG = {
 class MyModel(nn.Module):
     def __init__(self, num_classes=1):
         super(MyModel, self).__init__()
-        self.backbone = timm.create_model(model_name='mobilenetv3_large_100', pretrained=True)
-        self.backbone.classifier = nn.Linear(in_features= self.backbone.classifier.in_features, out_features=num_classes)
+        self.backbone = timm.create_model(model_name='efficientnet_b0', pretrained=True)
+        self.fc = nn.Linear(1000,num_classes)
         
     def forward(self, x):
         x = self.backbone(x)
+        x = self.fc(x)
         x = nn.Sigmoid()(x)
         return x
     
@@ -37,13 +38,12 @@ def get_model(model_path: str="assets/best.pth") -> MyModel:
     return model
 
 def _transform_image(image_bytes: bytes):
-    transform = A.Compose(
-        [
-            A.Resize(CFG['IMG_HEIGTH'],CFG['IMG_WIDTH']),
-            A.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225), max_pixel_value=255.0, always_apply=False, p=1.0),
-            ToTensorV2()
-        ]
-    )
+    transform = A.Compose([
+        A.Resize(CFG['IMG_HEIGTH'],CFG['IMG_WIDTH']),
+        A.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225), max_pixel_value=255.0, always_apply=False, p=1.0),
+        A.ToGray(p=1),
+        ToTensorV2()
+        ])
     image = Image.open(io.BytesIO(image_bytes))
     image = image.convert("RGB")
     image_array = np.array(image)
@@ -53,9 +53,7 @@ def predict_from_image_byte(model: MyModel, image_bytes: bytes, config: Dict[str
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     transformed_image = _transform_image(image_bytes).to(device)
     output = model.forward(transformed_image)
-    threshold = 0.5
-    result = (output> threshold).float()*1
-    return config["classes"][int(torch.round(result[0]))]
+    return config["classes"][int(torch.round(output[0]))]
 
 
 def get_config(config_path: str = "assets/config.yaml"):
