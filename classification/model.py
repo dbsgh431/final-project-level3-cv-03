@@ -171,7 +171,7 @@ def train(model, optimizer, train_loader, test_loader, scheduler, device):
         model.train()
         start_time = time.monotonic()
         train_loss = []
-        epoch_acc = 0
+        epoch_acc = []
         for step,(img, label) in enumerate(train_loader): #tqdm(iter(train_loader)
 
             img, label = img.float().to(device), label.float().to(device)
@@ -181,6 +181,7 @@ def train(model, optimizer, train_loader, test_loader, scheduler, device):
             model_pred = model(img)
 
             acc = calculate_accuracy(model_pred, label)
+            epoch_acc.append(acc.item())
 
             loss = criterion(model_pred, label)
             loss.backward()
@@ -189,14 +190,14 @@ def train(model, optimizer, train_loader, test_loader, scheduler, device):
             train_loss.append(loss.item())
 
             if (step + 1) % 5 == 0:
-                print(f'Epoch [{epoch}], Step [{step+1}], Train Loss : [{round(loss.item(),4):.5f}] Train acc : [{acc:.5f}]')
-
-            wandb.log({'train_acc':acc})
-
+                print(f'Epoch [{epoch}], Step [{step+1}], Train Loss : [{round(loss.item(),4):.5f}]')
+                wandb.log({'Train Loss':round(loss.item(),4)})
+                
+        epoch_acc = np.mean(epoch_acc)
+        wandb.log({'train_acc':epoch_acc})
         end_time = time.monotonic()
         epoch_min, epoch_sec = time_of_epoch(start_time, end_time)
         train_loss_m = np.mean(train_loss)
-        epoch_acc += acc.item()
         val_loss, val_acc = validation(model, criterion, test_loader, device)
 
         print(f'Epoch [{epoch}], Train Loss : [{train_loss_m:.5f}] Val Loss : [{val_loss:.5f}] Val acc : [{val_acc:.5f}],Time : {epoch_min}m {epoch_sec}s')
@@ -208,8 +209,8 @@ def train(model, optimizer, train_loader, test_loader, scheduler, device):
             best_model = model
             best_score = val_acc
             print(f"save_best_pth EPOCH {epoch}")
-            torch.save(model.state_dict(),"/opt/ml/model_save_dir/best.pth")
-    wandb.save("/opt/ml/model_save_dir/best.pth")
+            torch.save(model.state_dict(),"/opt/ml/model_save_dir/best_efb0_wbtest.pth")
+    wandb.save("/opt/ml/model_save_dir/best_efb0_wbtest.pth")
     return best_model
 
 if __name__ == '__main__':
@@ -217,7 +218,7 @@ if __name__ == '__main__':
     wandb.init(
     project="Final Project", 
     entity="aitech4_cv3",
-    name='classification_EFB0',
+    name='classification_EFB0_wandb_test',
     config = {
         "lr" : CFG['LEARNING_RATE'],
         "epoch" : CFG['EPOCHS'],
