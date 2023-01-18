@@ -38,7 +38,7 @@ CFG = {
     'IMG_WIDTH':1280,
     'IMG_HEIGTH':720,
     'EPOCHS':10,
-    'LEARNING_RATE':3e-4,
+    'LEARNING_RATE':0.0001,
     'BATCH_SIZE':16,
     'SEED':3
 }
@@ -117,7 +117,6 @@ class BaseModel(nn.Module):
         
     def forward(self, x):
         x = self.backbone(x)
-        x = nn.Dropout2d(0.2)(x)
         x = self.fc(x)
         x = nn.Sigmoid()(x)
         return x
@@ -249,6 +248,6 @@ if __name__ == '__main__':
     val_loader = DataLoader(val_dataset, batch_size=CFG['BATCH_SIZE'], shuffle=False, num_workers=0)
 
     model = BaseModel()
-    optimizer = torch.optim.Adam(params = model.parameters(), lr = CFG["LEARNING_RATE"])
-    scheduler = None
+    optimizer = optim.AdamW(params = model.parameters(), lr = CFG["LEARNING_RATE"])
+    scheduler = optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.95) 
     infer_model = train(model, optimizer, train_loader, val_loader, scheduler, device)
