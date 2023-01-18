@@ -35,8 +35,8 @@ import wandb
 global CFG
 
 CFG = {
-    'IMG_WIDTH':1024,
-    'IMG_HEIGTH':512,
+    'IMG_WIDTH':1280,
+    'IMG_HEIGTH':720,
     'EPOCHS':10,
     'LEARNING_RATE':3e-4,
     'BATCH_SIZE':16,
@@ -64,16 +64,19 @@ class Augmentation():
                                 A.HorizontalFlip(p=0.5),
                                 A.RandomBrightnessContrast(p=0.25),
                                 A.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225), max_pixel_value=255.0, always_apply=False, p=1.0),
+                                A.ToGray(p=1),
                                 ToTensorV2()
                                 ])
     val_transform = A.Compose([
                                 A.Resize(CFG['IMG_HEIGTH'],CFG['IMG_WIDTH']),
                                 A.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225), max_pixel_value=255.0, always_apply=False, p=1.0),
+                                A.ToGray(p=1),
                                 ToTensorV2()
                                 ])
     test_transform = A.Compose([
                                 A.Resize(CFG['IMG_HEIGTH'],CFG['IMG_WIDTH']),
                                 A.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225), max_pixel_value=255.0, always_apply=False, p=1.0),
+                                A.ToGray(p=1),
                                 ToTensorV2()
                                 ])
 
@@ -90,7 +93,7 @@ class CustomDataset(Dataset):
         image = cv2.imread(img_path)
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
-        #image = crop_three_quarters(image, CFG['IMG_HEIGTH'])
+        image = crop_three_quarters(image, CFG['IMG_HEIGTH'])
         if self.transforms is not None:
             image = self.transforms(image=image)['image']
             
@@ -108,12 +111,13 @@ class CustomDataset(Dataset):
 class BaseModel(nn.Module):
     def __init__(self, num_classes=1):
         super(BaseModel, self).__init__()
-        self.backbone = timm.create_model(model_name='efficientnet_b3', pretrained=True)
+        self.backbone = timm.create_model(model_name='efficientnet_b0', pretrained=True)
         self.fc = nn.Linear(1000,num_classes)
         #self.classifier1 = nn.Linear(256, num_classes)
         
     def forward(self, x):
         x = self.backbone(x)
+        x = nn.Dropout2d(0.2)(x)
         x = self.fc(x)
         x = nn.Sigmoid()(x)
         return x
@@ -205,8 +209,8 @@ def train(model, optimizer, train_loader, test_loader, scheduler, device):
             best_model = model
             best_score = val_acc
             print(f"save_best_pth EPOCH {epoch}")
-            torch.save(model.state_dict(),"../../model_save_dir/best.pth")
-        
+            torch.save(model.state_dict(),"/opt/ml/model_save_dir/best.pth")
+    wandb.save("/opt/ml/model_save_dir/best.pth")
     return best_model
 
 if __name__ == '__main__':
@@ -214,7 +218,7 @@ if __name__ == '__main__':
     wandb.init(
     project="Final Project", 
     entity="aitech4_cv3",
-    name='classification_EFB3',
+    name='classification_EFB0',
     config = {
         "lr" : CFG['LEARNING_RATE'],
         "epoch" : CFG['EPOCHS'],
