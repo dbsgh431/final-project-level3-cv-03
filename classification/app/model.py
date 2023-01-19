@@ -11,8 +11,8 @@ from typing import List, Dict, Any
 global CFG
 
 CFG = {
-    'IMG_WIDTH':512,
-    'IMG_HEIGTH':1024,
+    'IMG_WIDTH':1280,
+    'IMG_HEIGTH':720,
     'EPOCHS':10,
     'LEARNING_RATE':3e-4,
     'BATCH_SIZE':32,
