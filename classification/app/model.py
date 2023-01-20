@@ -13,10 +13,10 @@ global CFG
 CFG = {
     'IMG_WIDTH':1280,
     'IMG_HEIGTH':720,
-    'EPOCHS':10,
-    'LEARNING_RATE':3e-4,
-    'BATCH_SIZE':32,
-    'SEED':3
+    # 'EPOCHS':10,
+    # 'LEARNING_RATE':3e-4,
+    # 'BATCH_SIZE':32,
+    # 'SEED':3
 }
 
 class MyModel(nn.Module):
