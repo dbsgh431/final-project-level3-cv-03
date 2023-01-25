@@ -1,2 +1,4 @@
 wandb/
 classification/app/__pycache__
+work_dirs
+app/routers/__pycache__
