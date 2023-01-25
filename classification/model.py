@@ -35,11 +35,11 @@ import wandb
 global CFG
 
 CFG = {
-    'IMG_WIDTH':512,
-    'IMG_HEIGTH':1024,
+    'IMG_WIDTH':1280,
+    'IMG_HEIGTH':720,
     'EPOCHS':10,
     'LEARNING_RATE':3e-4,
-    'BATCH_SIZE':32,
+    'BATCH_SIZE':16,
     'SEED':3
 }
 
@@ -54,8 +54,15 @@ def seed_everything(seed):
     torch.backends.cudnn.benchmark = True
 
 
+def crop_three_quarters(img, h):
+    h_start = int(h*0.25)
+    image = img[h_start:h+1,::,::]
+    return image
+
 class Augmentation():
     train_transform = A.Compose([A.Resize(CFG['IMG_HEIGTH'],CFG['IMG_WIDTH']),
+                                A.HorizontalFlip(p=0.5),
+                                A.RandomBrightnessContrast(p=0.25),
                                 A.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225), max_pixel_value=255.0, always_apply=False, p=1.0),
                                 ToTensorV2()
                                 ])
@@ -83,11 +90,12 @@ class CustomDataset(Dataset):
         image = cv2.imread(img_path)
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
+        image = crop_three_quarters(image, CFG['IMG_HEIGTH'])
         
         if self.transforms is not None:
             image = self.transforms(image=image)['image']
             
-        
+
         if self.labels is not None:
             label = self.labels[index]
             return image, label
@@ -102,6 +110,7 @@ class BaseModel(nn.Module):
     def __init__(self, num_classes=1):
         super(BaseModel, self).__init__()
         self.backbone = timm.create_model(model_name='efficientnet_b0', pretrained=True)
+        print(self.backbone)
         self.fc = nn.Linear(1000,num_classes)
         #self.classifier1 = nn.Linear(256, num_classes)
         
@@ -161,7 +170,7 @@ def train(model, optimizer, train_loader, test_loader, scheduler, device):
         model.train()
         start_time = time.monotonic()
         train_loss = []
-        epoch_acc = 0
+        epoch_acc = []
         for step,(img, label) in enumerate(train_loader): #tqdm(iter(train_loader)
 
             img, label = img.float().to(device), label.float().to(device)
@@ -171,6 +180,7 @@ def train(model, optimizer, train_loader, test_loader, scheduler, device):
             model_pred = model(img)
 
             acc = calculate_accuracy(model_pred, label)
+            epoch_acc.append(acc.item())
 
             loss = criterion(model_pred, label)
             loss.backward()
@@ -179,14 +189,14 @@ def train(model, optimizer, train_loader, test_loader, scheduler, device):
             train_loss.append(loss.item())
 
             if (step + 1) % 5 == 0:
-                print(f'Epoch [{epoch}], Step [{step+1}], Train Loss : [{round(loss.item(),4):.5f}] Train acc : [{acc:.5f}]')
-
-            wandb.log({'train_acc':acc})
-
+                print(f'Epoch [{epoch}], Step [{step+1}], Train Loss : [{round(loss.item(),4):.5f}]')
+                wandb.log({'Train Loss':round(loss.item(),4)})
+                
+        epoch_acc = np.mean(epoch_acc)
+        wandb.log({'train_acc':epoch_acc})
         end_time = time.monotonic()
         epoch_min, epoch_sec = time_of_epoch(start_time, end_time)
         train_loss_m = np.mean(train_loss)
-        epoch_acc += acc.item()
         val_loss, val_acc = validation(model, criterion, test_loader, device)
 
         print(f'Epoch [{epoch}], Train Loss : [{train_loss_m:.5f}] Val Loss : [{val_loss:.5f}] Val acc : [{val_acc:.5f}],Time : {epoch_min}m {epoch_sec}s')
@@ -198,8 +208,8 @@ def train(model, optimizer, train_loader, test_loader, scheduler, device):
             best_model = model
             best_score = val_acc
             print(f"save_best_pth EPOCH {epoch}")
-            torch.save(model.state_dict(),"../../model_save_dir/best.pth")
-        
+            torch.save(model.state_dict(),"/opt/ml/model_save_dir/best.pth")
+    wandb.save("/opt/ml/model_save_dir/best.pth")
     return best_model
 
 if __name__ == '__main__':
@@ -207,7 +217,7 @@ if __name__ == '__main__':
     wandb.init(
     project="Final Project", 
     entity="aitech4_cv3",
-    name='classification',
+    name='classification_',
     config = {
         "lr" : CFG['LEARNING_RATE'],
         "epoch" : CFG['EPOCHS'],
