@@ -56,7 +56,7 @@ def predict_from_image_byte(model: MyModel, image_bytes: bytes, config: Dict[str
     return config["classes"][int(torch.round(output[0]))]
 
 
-def get_config(config_path: str = "assets/config.yaml"):
+def get_config(config_path: str = "/opt/ml/final-project-level3-cv-03/classification/assets/config.yaml"):
     import yaml
 
     with open(config_path, "r") as f:
