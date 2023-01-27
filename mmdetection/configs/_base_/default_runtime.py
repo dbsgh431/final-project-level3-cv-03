@@ -1,11 +1,18 @@
 import wandb
 
+wandb.login()
 checkpoint_config = dict(interval=1)
 # yapf:disable
 log_config = dict(
     interval=50,
     hooks=[
         dict(type='TextLoggerHook'),
+        dict(type='WandbLoggerHook', interval=10,
+             init_kwargs=dict(
+                 project='Final Project',
+                 entity='aitech4_cv3',
+                 name='cascade_rcnn_r50_fpn_1x'
+             ))
         # dict(type='TensorboardLoggerHook')
     ])
 # yapf:enable
