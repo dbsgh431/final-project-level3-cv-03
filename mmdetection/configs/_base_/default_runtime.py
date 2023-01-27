@@ -1,3 +1,5 @@
+import wandb
+
 checkpoint_config = dict(interval=1)
 # yapf:disable
 log_config = dict(
