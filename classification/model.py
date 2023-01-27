@@ -37,8 +37,10 @@ global CFG
 CFG = {
     'IMG_WIDTH':1280,
     'IMG_HEIGTH':720,
+    'IMG_WIDTH':1280,
+    'IMG_HEIGTH':720,
     'EPOCHS':10,
-    'LEARNING_RATE':3e-4,
+    'LEARNING_RATE':0.0001,
     'BATCH_SIZE':16,
     'SEED':3
 }
@@ -64,16 +66,19 @@ class Augmentation():
                                 A.HorizontalFlip(p=0.5),
                                 A.RandomBrightnessContrast(p=0.25),
                                 A.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225), max_pixel_value=255.0, always_apply=False, p=1.0),
+                                A.ToGray(p=1),
                                 ToTensorV2()
                                 ])
     val_transform = A.Compose([
                                 A.Resize(CFG['IMG_HEIGTH'],CFG['IMG_WIDTH']),
                                 A.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225), max_pixel_value=255.0, always_apply=False, p=1.0),
+                                A.ToGray(p=1),
                                 ToTensorV2()
                                 ])
     test_transform = A.Compose([
                                 A.Resize(CFG['IMG_HEIGTH'],CFG['IMG_WIDTH']),
                                 A.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225), max_pixel_value=255.0, always_apply=False, p=1.0),
+                                A.ToGray(p=1),
                                 ToTensorV2()
                                 ])
 
@@ -90,7 +95,7 @@ class CustomDataset(Dataset):
         image = cv2.imread(img_path)
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
-        #image = crop_three_quarters(image, CFG['IMG_HEIGTH'])
+        image = crop_three_quarters(image, CFG['IMG_HEIGTH'])
         if self.transforms is not None:
             image = self.transforms(image=image)['image']
             
@@ -108,6 +113,7 @@ class CustomDataset(Dataset):
 class BaseModel(nn.Module):
     def __init__(self, num_classes=1):
         super(BaseModel, self).__init__()
+        self.backbone = timm.create_model(model_name='efficientnet_b0', pretrained=True)
         self.backbone = timm.create_model(model_name='efficientnet_b0', pretrained=True)
         self.fc = nn.Linear(1000,num_classes)
         #self.classifier1 = nn.Linear(256, num_classes)
@@ -169,6 +175,7 @@ def train(model, optimizer, train_loader, test_loader, scheduler, device):
         start_time = time.monotonic()
         train_loss = []
         epoch_acc = []
+        epoch_acc = []
         for step,(img, label) in enumerate(train_loader): #tqdm(iter(train_loader)
 
             img, label = img.float().to(device), label.float().to(device)
@@ -179,6 +186,7 @@ def train(model, optimizer, train_loader, test_loader, scheduler, device):
 
             acc = calculate_accuracy(model_pred, label)
             epoch_acc.append(acc.item())
+            epoch_acc.append(acc.item())
 
             loss = criterion(model_pred, label)
             loss.backward()
@@ -187,6 +195,11 @@ def train(model, optimizer, train_loader, test_loader, scheduler, device):
             train_loss.append(loss.item())
 
             if (step + 1) % 5 == 0:
+                print(f'Epoch [{epoch}], Step [{step+1}], Train Loss : [{round(loss.item(),4):.5f}]')
+                wandb.log({'Train Loss':round(loss.item(),4)})
+                
+        epoch_acc = np.mean(epoch_acc)
+        wandb.log({'train_acc':epoch_acc})
                 print(f'Epoch [{epoch}], Step [{step+1}], Train Loss : [{round(loss.item(),4):.5f}]')
                 wandb.log({'Train Loss':round(loss.item(),4)})
                 
@@ -246,6 +259,6 @@ if __name__ == '__main__':
     val_loader = DataLoader(val_dataset, batch_size=CFG['BATCH_SIZE'], shuffle=False, num_workers=0)
 
     model = BaseModel()
-    optimizer = torch.optim.Adam(params = model.parameters(), lr = CFG["LEARNING_RATE"])
-    scheduler = None
+    optimizer = optim.AdamW(params = model.parameters(), lr = CFG["LEARNING_RATE"])
+    scheduler = optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.95) 
     infer_model = train(model, optimizer, train_loader, val_loader, scheduler, device)
