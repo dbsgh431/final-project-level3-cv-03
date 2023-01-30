@@ -1,5 +1,5 @@
 _base_ = [
-    '/opt/ml/final-project-level3-cv-03/mmdetection/configs/_base_/models/cascade_rcnn_r50_fpn.py',
+    '/opt/ml/final-project-level3-cv-03/mmdetection/configs/_custom_/cascade_rcnn_r50_fpn.py',
     '/opt/ml/final-project-level3-cv-03/mmdetection/configs/_custom_/coco_detection.py',
     '/opt/ml/final-project-level3-cv-03/mmdetection/configs/_base_/schedules/schedule_2x.py',
     '/opt/ml/final-project-level3-cv-03/mmdetection/configs/_custom_/default_runtime.py'

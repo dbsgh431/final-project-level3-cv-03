@@ -1,6 +1,0 @@
-classes:
-  0:
-  - No pothole
-  1:
-  - pothole
-model_name: best.pth

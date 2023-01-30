@@ -31,7 +31,7 @@ class MyModel(nn.Module):
         x = nn.Sigmoid()(x)
         return x
     
-def get_model(model_path: str="assets/best.pth") -> MyModel:
+def get_model(model_path: str="/opt/ml/essential_config/best_classification.pth") -> MyModel:
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = MyModel(num_classes=1).to(device)
     model.load_state_dict(torch.load(model_path, map_location=device))
@@ -56,7 +56,7 @@ def predict_from_image_byte(model: MyModel, image_bytes: bytes, config: Dict[str
     return config["classes"][int(torch.round(output[0]))]
 
 
-def get_config(config_path: str = "/opt/ml/final-project-level3-cv-03/classification/assets/config.yaml"):
+def get_config(config_path: str = "/opt/ml/essential_config/Cls_config.yaml"):
     import yaml
 
     with open(config_path, "r") as f:

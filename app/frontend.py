@@ -1,4 +1,5 @@
 import io
+import json
 import requests
 from PIL import Image
 import streamlit as st
@@ -23,12 +24,11 @@ def main():
 
         response = requests.post(f"http://localhost:30011/{work_corres[work]}", files=upfile)
         if work == 'Image Classification':
-            label = response.json()['result']
-            st.write(f'label is {label}')
+            label = response.status_code
+            st.write(label)
         elif work == 'Object Detection':
-            label = response.content
-            result_img = Image.open(io.BytesIO(label))
-            st.image(result_img, caption='Uploaded Image')
+            label = response.status_code
+            st.write(label)
         
         st.write('Work Completed')
 main()
