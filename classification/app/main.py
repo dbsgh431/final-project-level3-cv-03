@@ -1,4 +1,4 @@
-from fastapi import FastAPI, UploadFile, File
+from fastapi import FastAPI, UploadFile, File, Form
 from fastapi.param_functions import Depends
 from pydantic import BaseModel, Field
 from uuid import UUID, uuid4
@@ -13,7 +13,7 @@ class InferenceResult(BaseModel):
     id: UUID = Field(default_factory=uuid4)
     result: Optional[List]
     
-@app.post("/predict", description="이미지를 분류합니다.")
+@app.post("/predict2", description="이미지를 분류합니다.")
 async def predict_image(files: List[UploadFile] = File(...),
                 config: Dict[str, Any] = Depends(get_config)):
     global model
@@ -22,3 +22,7 @@ async def predict_image(files: List[UploadFile] = File(...),
     result = InferenceResult(result=result)
     return result
 
+@app.post("/predict", description="이미지를 분류합니다.")
+async def predict_image(lat: str= Form(...),
+                        lon:str=Form(...)):
+    print(lat, lon)
