@@ -110,9 +110,8 @@ class BaseModel(nn.Module):
     def __init__(self, num_classes=1):
         super(BaseModel, self).__init__()
         self.backbone = timm.create_model(model_name='efficientnet_b0', pretrained=True)
-        print(self.backbone)
-        self.fc = nn.Linear(1000,num_classes)
-        #self.classifier1 = nn.Linear(256, num_classes)
+        self.fc = nn.Linear(1280,num_classes)
+
         
     def forward(self, x):
         x = self.backbone(x)

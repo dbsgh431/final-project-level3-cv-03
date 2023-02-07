@@ -37,6 +37,11 @@ def get_model(model_path: str="assets/best.pth") -> MyModel:
     model.load_state_dict(torch.load(model_path, map_location=device))
     return model
 
+# def crop_three_quarters(img, h):
+#     h_start = int(h*0.25)
+#     image = img[h_start:h+1,::,::]
+#     return image
+
 def _transform_image(image_bytes: bytes):
     transform = A.Compose([
         A.Resize(CFG['IMG_HEIGTH'],CFG['IMG_WIDTH']),

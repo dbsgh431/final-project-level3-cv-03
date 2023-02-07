@@ -13,7 +13,7 @@ class InferenceResult(BaseModel):
     id: UUID = Field(default_factory=uuid4)
     result: Optional[List]
     
-@app.post("/predict2", description="이미지를 분류합니다.")
+@app.post("/predict", description="이미지를 분류합니다.")
 async def predict_image(files: List[UploadFile] = File(...),
                 config: Dict[str, Any] = Depends(get_config)):
     global model
@@ -21,8 +21,3 @@ async def predict_image(files: List[UploadFile] = File(...),
     result = predict_from_image_byte(model=model, image_bytes=image_bytes, config=config)
     result = InferenceResult(result=result)
     return result
-
-@app.post("/predict", description="이미지를 분류합니다.")
-async def predict_image(lat: str= Form(...),
-                        lon:str=Form(...)):
-    print(lat, lon)
