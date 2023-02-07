@@ -27,7 +27,7 @@ def current_location():
 def inference(files, loc):
 
     #1 post할 inference 서버 주소로 변경 필요
-    response = requests.post("http://49.50.175.25:30001/predict", data=loc,files=files)
+    response = requests.post("http://118.67.129.236:30011/OD", data=loc,files=files)
     
     label = response.json()["result"]   
     with numbers.container():
@@ -42,7 +42,6 @@ while run:
     #2 ip 카메라 사용시 cv2.VideoCapture('http://192.168.10.103:8080/video'), 현재는 웹캠
     camera = cv2.VideoCapture(0)
     _, frame = camera.read()
-    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     FRAME_WINDOW.image(frame)
 
     current = time.time()
