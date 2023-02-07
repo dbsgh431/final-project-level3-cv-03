@@ -11,7 +11,7 @@ def main():
     uploaded_file = st.file_uploader("Choose an image", type=["jpg", "jpeg", "png"])
 
     if uploaded_file:
-        coord = {'lat' : 38.0, 'lon' : 128.0}
+        coord = {'lat' : 37.00, 'lon' : 126.00}
         image_bytes = uploaded_file.getvalue()
         image = Image.open(io.BytesIO(image_bytes))
         upfile = {'files' : image_bytes}
