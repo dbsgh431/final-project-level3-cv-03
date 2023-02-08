@@ -51,13 +51,13 @@
 &nbsp;
 
 # Dataset
-<h4> AI Hub </h4>
+### **AIHub 개방 데이터셋**
 <img width="500" alt="image" src="https://user-images.githubusercontent.com/69153087/217477704-96233c3b-fc30-4ec2-ba02-fa47bee23d59.png">
 
 &nbsp;
 
 # Annotation Tool
-<img width="500" alt="image" src="https://user-images.githubusercontent.com/69153087/217476587-2eccb51c-c5c3-436a-bd8a-7f217fdcc14b.png">
+<img width="400" alt="image" src="https://user-images.githubusercontent.com/69153087/217476587-2eccb51c-c5c3-436a-bd8a-7f217fdcc14b.png">
 
 &nbsp;
 
