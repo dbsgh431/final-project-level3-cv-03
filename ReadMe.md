@@ -46,8 +46,7 @@
 &nbsp;
 
 # 프로젝트 수행 절차
-<img width="850" alt="image" src="https://user-images.githubusercontent.com/69153087/217484487-b1f7ed6a-c77f-4908-ac49-b83ae2022f07.png">
-
+<img width="850" alt="image" src="https://user-images.githubusercontent.com/69153087/217487359-ca40d0b4-ed29-4dd1-b479-2318f2b09012.png">
 
 &nbsp;
 
