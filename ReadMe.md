@@ -21,6 +21,7 @@
 
 &nbsp;
 
+
 # 데이터셋 구조
 ```
 ├─ input
@@ -45,11 +46,19 @@
 &nbsp;
 
 # 프로젝트 수행 절차
-<h3> 1. AI Hub에서 데이터 수집  </h3>
-- <h4> 도로 장애물/표면 인지 영상 (수도권)</h4>
-- <h4> 도로 장애물/표면 인지 영상 (수도권 외)</h4>
-- <h4> 지자체 도로 정비 AI 학습용 데이터</h4>
-<h3> 2. 이미지 내 포트홀 유무 판별을 위한 Image Classification 수행 </h3>
+
+
+&nbsp;
+
+# Dataset
+<img width="700" alt="image" src="https://user-images.githubusercontent.com/69153087/217474667-ab9d32c9-bf50-42d1-a5c2-797cee8b4157.png">
+
+# Annotation Tool
+<img width="200" alt="image" src="https://user-images.githubusercontent.com/69153087/217476587-2eccb51c-c5c3-436a-bd8a-7f217fdcc14b.png">
+
+&nbsp;
+
+# Image Classification 모델 실험 결과
 |모델|Best Accuracy|
 |------|---|
 |EfficentNet_b1|90.25|
@@ -58,9 +67,10 @@
 |MobileNet_large|87.05|
 |ResNet50|87.98|
 |ResNeSt|90.02|
-<h3> 3. Object Detection을 위한 이미지 Annotation 수행 </h3>
-- <h4> CVAT (Computer Vison Annotation Tool) 활용 </h4>
-<h3> 4. 이미지 내 포트폴 검출을 위한 Object Detection 수행 </h3>
+
+&nbsp;
+
+# Object Detection 모델 실험 결과
 |1 stage 모델|Best mAP50|
 |------|---|
 |YOLOF|0.3250|
@@ -72,29 +82,6 @@
 |Cascade_rcnn_r101|0.4590|
 |Cascade_ConvNeXt|0.4800|
 |Cascade_SwinL|0.5860|
-<h3> 5.   </h3>
-
-
-&nbsp;
-
-# 문제정의
-<h3> 1.    </h3>  
-
-- 
-
-
-
-&nbsp;
-
-# 모델 및 Data Augmentation
-- 
-
-&nbsp;
-
-# Advanced Techniques
-<h3> 1.    </h3>  
-
-- 
 
 
 # Reference
