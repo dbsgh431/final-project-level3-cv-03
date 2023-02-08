@@ -75,6 +75,8 @@
 |ResNet50|87.98|
 |ResNeSt|90.02|
 
+- __최종 모델 : EfficentNet_b2__
+
 &nbsp;
 
 # Annotation Tool
@@ -97,6 +99,8 @@
 |Cascade_rcnn_r101|0.4590|
 |Cascade_ConvNeXt|0.4800|
 |Cascade_SwinL|0.5860|
+
+- __최종 모델 : Cascade_swinL__
 
 &nbsp;
 
