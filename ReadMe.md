@@ -46,6 +46,7 @@
 &nbsp;
 
 # 프로젝트 수행 절차
+<img width="700" alt="image" src="https://user-images.githubusercontent.com/69153087/217484487-b1f7ed6a-c77f-4908-ac49-b83ae2022f07.png">
 
 
 &nbsp;
@@ -79,8 +80,10 @@
 # Annotation Tool
 <img width="400" alt="image" src="https://user-images.githubusercontent.com/69153087/217476587-2eccb51c-c5c3-436a-bd8a-7f217fdcc14b.png">
 
-&nbsp;
+<br> 
+<img width="600" alt="image" src="https://user-images.githubusercontent.com/69153087/217484193-ae6fac26-2419-4a4e-b219-714184e32f43.png">
 
+&nbsp;
 
 # Object Detection 실험 결과
 |1 stage 모델|Best mAP50|
