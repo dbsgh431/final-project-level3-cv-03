@@ -110,4 +110,6 @@
 
 # 시연영상
 ![시연영상](https://user-images.githubusercontent.com/69153087/217509028-50d45690-90d9-427e-b4f6-a6afcaafa3d5.gif)
+![20230208151451_f4dd945c (1)](https://user-images.githubusercontent.com/69153087/217509929-ded87c38-e688-465a-a944-2ee6b9cf3227.jpg)
+
 
